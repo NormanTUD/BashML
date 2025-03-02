@@ -26,7 +26,9 @@ gradient_step() {
     local size="${#weights[@]}"
     local updated_value
     for ((i=0; i<size; i++)); do
+        # Debugging: Zeige die Gewichtserhöhung an
         updated_value=$(( weights[i] - (gradients[i] * learning_rate / SCALE) ))
+        echo "Aktualisiere Gewicht $i: alt=${weights[i]} neu=${updated_value} mit Gradient=${gradients[i]} und Lernrate=$learning_rate"
         weights[i]=$updated_value
     done
 }
