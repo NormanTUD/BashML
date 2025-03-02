@@ -61,10 +61,16 @@ run_training() {
         add_tensors2d layer_output_with_bias layer_output bias
         relu_tensor2d predictions layer_output_with_bias
 
+        # Debugging: Ausgabe von Eingaben, Gewichten und Vorhersagen
+        echo "Epoch $epoch - Vorhersagen (predictions): ${predictions[@]}"
+        echo "Eingabewerte (input): ${input[@]}"
+        echo "Gewichte (weights): ${weights[@]}"
+        echo "Bias: ${bias[@]}"
+        echo "Layer Output (mit Bias): ${layer_output_with_bias[@]}"
+
         # Berechnung des Loss
         loss=$(mse_loss predictions target_output)
-        echo "Epoch $epoch - Loss: "
-        print_value "$loss"
+        echo "Loss: $loss"
         echo
 
         # Backpropagation (Dummy)
@@ -73,8 +79,15 @@ run_training() {
         # Gradienten als Array umwandeln
         gradients=($output_gradients)
 
+        # Debugging: Ausgabe der Gradienten
+        echo "Gradients: ${gradients[@]}"
+
         # Gradientenabstieg
         gradient_step weights gradients "$learning_rate"
+
+        # Debugging: Ausgabe der aktualisierten Gewichte
+        echo "Aktualisierte Gewichte: ${weights[@]}"
+        echo
     done
 
     echo "== Training abgeschlossen =="
@@ -84,4 +97,3 @@ run_training() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     run_training
 fi
-
