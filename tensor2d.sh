@@ -77,6 +77,35 @@ multiply_tensors2d() {
     done
 }
 
+matrix_multiply() {
+    local -n result=$1
+    local -n tensor_a=$2
+    local rows_a=$3
+    local cols_a=$4
+    local -n tensor_b=$5
+    local rows_b=$6
+    local cols_b=$7
+
+    if (( cols_a != rows_b )); then
+        echo "Fehler: Ungültige Matrizen für Multiplikation." >&2
+        return 1
+    fi
+
+    result=()
+    for ((i=0; i<rows_a; i++)); do
+        for ((j=0; j<cols_b; j++)); do
+            sum=0
+            for ((k=0; k<cols_a; k++)); do
+                index_a=$(( i * cols_a + k ))
+                index_b=$(( k * cols_b + j ))
+                product=$(( tensor_a[index_a] * tensor_b[index_b] / SCALE ))
+                sum=$(( sum + product ))
+            done
+            result+=("$sum")
+        done
+    done
+}
+
 run_tests() {
     echo "== Starte 2D-Tests =="
 
@@ -111,6 +140,16 @@ run_tests() {
     echo "Erwartet:"
     echo "0.990 1.760 2.310"
     echo "2.640 2.750 2.640"
+
+    echo
+    echo "Matrixmultiplikation-Test:"
+    create_tensor2d matrix_a rows_a cols_a 2 3 1 2 3 4 5 6
+    create_tensor2d matrix_b rows_b cols_b 3 2 7 8 9 10 11 12
+    matrix_multiply matrix_result matrix_a "$rows_a" "$cols_a" matrix_b "$rows_b" "$cols_b"
+    print_tensor2d matrix_result "$rows_a" "$cols_b"
+    echo "Erwartet:"
+    echo "58.000 64.000"
+    echo "139.000 154.000"
 
     echo
     echo "== Tests abgeschlossen =="
