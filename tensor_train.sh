@@ -3,8 +3,8 @@
 source ./tensor_nn.sh
 
 mse_loss() {
-    local -n predictions=$1
-    local -n targets=$2
+    local predictions=("${!1}")
+    local targets=("${!2}")
     local size="${#predictions[@]}"
     local sum=0
     local diff
@@ -18,8 +18,8 @@ mse_loss() {
 }
 
 gradient_step() {
-    local -n weights=$1
-    local -n gradients=$2
+    local weights=("${!1}")
+    local gradients=("${!2}")
     local learning_rate="$3"
     local size="${#weights[@]}"
     local updated_value
@@ -30,14 +30,14 @@ gradient_step() {
 }
 
 dummy_backprop() {
-    local predictions=$1
-    local targets=$2
-    local -n gradients=$3
+    local predictions=("${!1}")
+    local targets=("${!2}")
+    local gradients=()
     local size="${#predictions[@]}"
-    gradients=()
     for ((i=0; i<size; i++)); do
         gradients[$i]=$(( 2 * (predictions[i] - targets[i]) ))
     done
+    echo "${gradients[@]}"
 }
 
 run_training() {
@@ -65,13 +65,10 @@ run_training() {
         echo
 
         # Backpropagation (Dummy)
-        dummy_backprop predictions target_output output_gradients
+        output_gradients=$(dummy_backprop predictions target_output)
 
         # Einfach alle Gewichte mit den Output-Gradients updaten
-        gradients=()
-        for ((i=0; i<${#weights[@]}; i++)); do
-            gradients+=("${output_gradients[$(( i % ${#output_gradients[@]} ))]}")
-        done
+        gradients=($output_gradients)
 
         # Gradientenabstieg
         gradient_step weights gradients "$learning_rate"
@@ -84,3 +81,4 @@ run_training() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     run_training
 fi
+
