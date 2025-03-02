@@ -22,8 +22,10 @@ gradient_step() {
     local -n gradients=$2
     local learning_rate="$3"
     local size="${#weights[@]}"
+    local updated_value
     for ((i=0; i<size; i++)); do
-        weights[i]=$(( weights[i] - (gradients[i] * learning_rate / SCALE) ))
+        updated_value=$(( weights[i] - (gradients[i] * learning_rate / SCALE) ))
+        weights[i]=$updated_value
     done
 }
 
@@ -31,8 +33,8 @@ dummy_backprop() {
     local -n predictions=$1
     local -n targets=$2
     local -n gradients=$3
-    local size="${#predictions[@]}"
     gradients=()
+    local size="${#predictions[@]}"
     for ((i=0; i<size; i++)); do
         gradients+=($(( 2 * (predictions[i] - targets[i]) )))
     done
