@@ -73,7 +73,6 @@ run_training() {
         # Berechnung des Loss
         loss=$(mse_loss predictions target_output)
         echo "Loss: $loss"
-        echo
 
         # Backpropagation (Dummy)
         output_gradients=$(dummy_backprop predictions target_output)
@@ -81,8 +80,11 @@ run_training() {
         # Gradienten als Array umwandeln
         gradients=($output_gradients)
 
-        # Debugging: Ausgabe der Gradienten
-        echo "Gradients: ${gradients[@]}"
+        # Debugging: Ausgabe der Differenz und Gradienten
+        for ((i=0; i<${#predictions[@]}; i++)); do
+            echo "Differenz (prediction - target): ${predictions[i]} - ${target_output[i]} = $((predictions[i] - target_output[i]))"
+            echo "Gradient für Index $i: ${gradients[$i]}"
+        done
 
         # Gradientenabstieg
         gradient_step weights gradients "$learning_rate"
