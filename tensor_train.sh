@@ -2,6 +2,7 @@
 
 source ./tensor_nn.sh
 
+# Mean Squared Error Loss (MSE)
 mse_loss() {
     local predictions=("${!1}")
     local targets=("${!2}")
@@ -17,6 +18,7 @@ mse_loss() {
     echo $(( sum / size ))
 }
 
+# Gradient Step (Aktualisierung der Gewichte mit Gradienten)
 gradient_step() {
     local weights=("${!1}")
     local gradients=("${!2}")
@@ -29,6 +31,7 @@ gradient_step() {
     done
 }
 
+# Backpropagation (Berechnung der Gradienten)
 dummy_backprop() {
     local predictions=("${!1}")
     local targets=("${!2}")
@@ -50,7 +53,7 @@ run_training() {
     create_tensor2d target_output rows_t cols_t 1 2 5.0 7.0
 
     # Lernrate
-    learning_rate=100  # Entspricht 0.1
+    learning_rate=10  # Entspricht einer Lernrate von 0.1
 
     for epoch in {1..5}; do
         # Forward Pass
@@ -67,7 +70,7 @@ run_training() {
         # Backpropagation (Dummy)
         output_gradients=$(dummy_backprop predictions target_output)
 
-        # Einfach alle Gewichte mit den Output-Gradients updaten
+        # Gradienten als Array umwandeln
         gradients=($output_gradients)
 
         # Gradientenabstieg
